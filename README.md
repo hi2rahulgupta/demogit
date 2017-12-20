@@ -1,4 +1,4 @@
-This repo holds the files used in the CI/CD Pipeline demo that runs is documented in 
+This repo holds the files used in the CI/CD Pipeline demo that is documented in 
 
 http://tesch.in/?page_id=346
 
