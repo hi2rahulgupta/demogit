@@ -1,0 +1,106 @@
+- name: Make sure all the servers are configured properly
+  hosts: all
+  tasks:
+
+  - name: Configure DNS
+    copy: 
+      src: files/resolv.conf
+      dest: /etc/resolv.conf
+      owner: root
+      group: root
+      mode: 0644
+ 
+  - name: Create users
+    user:
+      name: gatesch
+      comment: "Alejandro Tesch"
+      uid: 1000
+      password: $6$tZmUbUZG$CQ0kIGGbcR.7CIbUZDK7ZqEwaBOljIMjrV4pWkJvmddRPbhVdrtdwPS2jroo5tVea91VFyPnGbbkFb9liXQnv/
+
+  - name: Create ssh directory
+    file: path=/home/gatesch/.ssh state=directory
+
+  - name:  Copy key to user
+    copy:
+      src: files/authorized_keys
+      dest: /home/gatesch/.ssh/authorized_keys
+      owner: gatesch
+      group: gatesch
+      mode: 0644
+
+  - name: Install NFS utils
+    yum:
+      name: nfs-utils
+      state: present
+
+  - name: Create directory for gitlab data
+    file:
+      path: /var/lib/docker/volumes/gitlab_data/
+      state: directory
+      mode: 0755
+
+  - name: add line to fstab
+    lineinfile:
+      dest: /etc/fstab
+      line: 192.168.12.10:/mnt/gitlab_data /var/lib/docker/volumes/gitlab_data nfs defaults 0 0
+
+  - name: mount filesystem for winlab volume
+    mount:
+      name: /var/lib/docker/volumes/gitlab_data
+      state: mounted
+      fstype: nfs
+      src: 192.168.12.10:/mnt/gitlab_data
+
+  - name: Create directory for gitlab logs
+    file:
+      path: /var/lib/docker/volumes/gitlab_logs/
+      state: directory
+      mode: 0755
+
+  - name: add line to fstab
+    lineinfile:
+      dest: /etc/fstab
+      line: 192.168.12.10:/mnt/gitlab_logs /var/lib/docker/volumes/gitlab_logs nfs defaults 0 0
+
+  - name: mount filesystem for winlab volume
+    mount:
+      name: /var/lib/docker/volumes/gitlab_logs
+      state: mounted
+      fstype: nfs
+      src: 192.168.12.10:/mnt/gitlab_logs
+
+  - name: Create directory for gitlab etc
+    file:
+      path: /var/lib/docker/volumes/gitlab_etc/
+      state: directory
+      mode: 0755
+
+  - name: add line to fstab
+    lineinfile:
+      dest: /etc/fstab
+      line: 192.168.12.10:/mnt/gitlab_etc /var/lib/docker/volumes/gitlab_etc nfs defaults 0 0
+
+  - name: mount filesystem for winlab volume
+    mount:
+      name: /var/lib/docker/volumes/gitlab_etc
+      state: mounted
+      fstype: nfs
+      src: 192.168.12.10:/mnt/gitlab_etc
+
+  - name: Create directory for jenkins 
+    file:
+      path: /var/lib/docker/volumes/jenkins_data/
+      state: directory
+      mode: 0755
+
+  - name: add line to fstab
+    lineinfile:
+      dest: /etc/fstab
+      line: 192.168.12.10:/mnt/jenkins_data /var/lib/docker/volumes/jenkins_data nfs defaults 0 0
+
+  - name: mount filesystem for winlab volume
+    mount:
+      name: /var/lib/docker/volumes/jenkins_data
+      state: mounted
+      fstype: nfs
+      src: 192.168.12.10:/mnt/jenkins_data
