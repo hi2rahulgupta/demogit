@@ -16,7 +16,15 @@ def gitCommit() {
 
         // Login to DTR 
         stage 'Login'
-        sh "docker login -u root -p redhat12 dtr.novalocal"
+        withCredentials(
+            [[
+                $class: 'UsernamePasswordMultiBinding',
+                credentialsId: 'dtr',
+                passwordVariable: 'DTR_PASSWORD',
+                usernameVariable: 'DTR_USERNAME'
+            ]]
+        ){ 
+        sh "docker login -u ${env.DTR_USERNAME} -p ${env.DTR_PASSWORD}  dtr.novalocal"}
 
         // Push the image 
         stage 'Push'
